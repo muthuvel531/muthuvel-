@@ -166,11 +166,11 @@
             const [search, setSearch] = React.useState("");
 
             const services = [
-                { name: "Chantal Shelburne", service: "Home Cleaning", price: "₹400", icon: "fa-broom", page: "cleaningbook.html" },
-                { name: "Lauralee Quintero", service: "Kitchen Cleaning", price: "₹400", icon: "fa-utensils", page: "cleaningbook2.html" },
-                { name: "Geoffrey Mott", service: "Toilet Cleaning", price: "₹400", icon: "fa-toilet", page: "cleaningbook3.html" },
-                { name: "Leatrice Handler", service: "Window Cleaning", price: "₹400", icon: "fa-window-restore", page: "cleaningbook4.html" },
-                { name: "Leatrice Handler", service: "All Work In Cleaning", price: "₹800", icon: "fa-house", page: "cleaningbook5.html" }
+                { name: "Chantal Shelburne", service: "Home Cleaning",  icon: "fa-broom", page: "cleaningbook.html" },
+                { name: "Lauralee Quintero", service: "Kitchen Cleaning", icon: "fa-utensils", page: "cleaningbook2.html" },
+                { name: "Geoffrey Mott", service: "Toilet Cleaning",  icon: "fa-toilet", page: "cleaningbook3.html" },
+                { name: "Leatrice Handler", service: "Window Cleaning",  icon: "fa-window-restore", page: "cleaningbook4.html" },
+                { name: "Leatrice Handler", service: "All Work In Cleaning",  icon: "fa-house", page: "cleaningbook5.html" }
             ];
 
             function saveBooking(item) {
@@ -178,7 +178,7 @@
                 bookings.push({
                     name: item.name,
                     service: item.service,
-                    price: item.price,
+                   
                     icon: item.icon,
                     status: "Upcoming"
                 });
@@ -218,7 +218,7 @@
                             <div className="card-content">
                                 <p className="name">{item.name}</p>
                                 <h3>{item.service}</h3>
-                                <p className="price">{item.price}</p>
+                               
                             </div>
                         </div>
                     ))}
