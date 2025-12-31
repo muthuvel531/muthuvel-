@@ -250,7 +250,7 @@
         };
 
         firebase.initializeApp(firebaseConfig);
-        const db = firebase.database().ref("Plumbing");
+        const db = firebase.database().ref("Home Cleaning");
 
         function App() {
 
@@ -293,7 +293,7 @@
                 document.getElementById("prevMonth").onclick = () => { date.setMonth(date.getMonth() - 1); renderCalendar(); }
                 document.getElementById("nextMonth").onclick = () => { date.setMonth(date.getMonth() + 1); renderCalendar(); }
 
-                document.getElementById("Plumbing").onsubmit = e => {
+                document.getElementById("Home Cleaning").onsubmit = e => {
                     e.preventDefault();
 
                     if (!selectedDay) { alert("Select date"); return; }
@@ -315,7 +315,7 @@
 
             return (
                 <div className="container">
-                    <form id="Plumbing">
+                    <form id="Home Cleaning">
                         <h2 className="title">Booking Details</h2>
                         <h2 id="bookingTitle">Booking:</h2>
 
@@ -359,3 +359,4 @@
 </body>
 
 </html>
+
