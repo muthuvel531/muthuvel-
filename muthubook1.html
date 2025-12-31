@@ -6,8 +6,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Booking Details</title>
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap">
+    <!-- React -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 
     <style>
         body {
@@ -25,10 +33,11 @@
             max-width: 400px;
             padding: 28px;
             border-radius: 28px;
-            background: rgba(25, 25, 40, 0.85);
+            margin-left: -30px;
+            /* background: rgba(25, 25, 40, 0.85);
             box-shadow: 0 0 25px rgba(120, 60, 255, 0.4);
             backdrop-filter: blur(12px);
-            animation: fadeIn 0.8s ease;
+            animation: fadeIn 0.8s ease; */
         }
 
         @keyframes fadeIn {
@@ -229,286 +238,124 @@
 </head>
 
 <body>
+    <div id="root"></div>
 
-    <div class="container">
-        <form id="Cleaning">
-            <h2 class="title">Booking Details</h2>
+    <script type="text/babel">
 
-            <h2 id="myTitle">Booking: Home Cleaning</h2>
-            <p class="price" id="Vel">price: ₹400 <small>(Floor price)</small></p>
-
-            <!-- <h2 class="title">Booking Details</h2>
-
-            <h2 id="myTitle">House Cleaning</h2>
-            <p class="price" id="Vel">₹400 <small>(Floor price)</small></p> -->
-
-            <h4 class="section-title">Select Date</h4>
-
-            <div class="calendar-box">
-                <div class="calendar-header">
-                    <h3 id="calendarMonth">January 2026</h3>
-
-                    <div class="cal-arrows">
-                        <span id="prevMonth">&#8249;</span>
-                        <span id="nextMonth">&#8250;</span>
-                    </div>
-                </div>
-
-                <div class="weekdays">
-                    <span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span><span>Su</span>
-                </div>
-
-                <div class="days" id="calendarDays"></div>
-            </div>
-
-            <h4 class="section-title">Select Time</h4>
-
-            <select id="timeSelect" class="promo-box" required>
-                <option value="">Choose Time</option>
-                <option value="FullDay  (10AM-3PM)">Full Day (10AM-3PM)</option>
-                <option value="08:00AM to 10:00AM">8:00 AM - 10:00 AM</option>
-                <option value="11:00AM to 1:00PM">11:00 AM -1:00 PM</option>
-                <option value="2:00PM to 4:00PM">2:00 PM - 4:00 PM</option>
-                <option value="5:00PM to 8:00PM">5:00 PM - 8:00 PM</option>
-            </select>
-
-            <h4 class="section-title">Contact</h4>
-            <div class="promo-box">
-                <input type="text" placeholder="Enter Name" id="name" required>
-            </div>
-
-            <div class="promo-box">
-                <input type="number" placeholder="Enter Phone Number" id="number" required>
-            </div>
-
-            <div class="promo-box">
-                <textarea id="address" placeholder="Enter Address" required></textarea>
-            </div>
-
-
-
-            <!-- FIXED BUTTON -->
-            <button class="footer-btn" id="continueBtn" type="submit">Continue – ₹400</button>
-
-
-        </form>
-    </div>
-
-    <!-- FIREBASE -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-
-    <script>
         const firebaseConfig = {
             apiKey: "AIzaSyCqFIyVhPXx1r5W4fJM4nOii09AIxi0vKQ",
             authDomain: "contactform-85948.firebaseapp.com",
             databaseURL: "https://contactform-85948-default-rtdb.firebaseio.com",
-            projectId: "contactform-85948",
-            storageBucket: "contactform-85948.appspot.com",
-            messagingSenderId: "901007557564",
-            appId: "1:901007557564:web:25b92b3224f24d85be21b9"
+            projectId: "contactform-85948"
         };
 
         firebase.initializeApp(firebaseConfig);
-        var contactFormDB = firebase.database().ref("Cleaning");
-    </script>
+        const db = firebase.database().ref("Plumbing");
 
-    <!-- CALENDAR -->
-    <script>
-        let currentYear = 2026;
-        let currentMonth = 0;
-        let selectedFullDate = "";
+        function App() {
 
-        const monthNames = [
-            "January", "February", "March", "April", "May", "June",
-            "July", "August", "September", "October", "November", "December"
-        ];
+            React.useEffect(() => {
 
-        function renderCalendar() {
-            const daysContainer = document.getElementById("calendarDays");
-            const monthLabel = document.getElementById("calendarMonth");
+                const monthEl = document.getElementById("calendarMonth");
+                const daysEl = document.getElementById("calendarDays");
+                let date = new Date();
+                let selectedDay = "";
 
-            monthLabel.innerText = `${monthNames[currentMonth]} ${currentYear}`;
-            daysContainer.innerHTML = "";
+                function renderCalendar() {
+                    daysEl.innerHTML = "";
+                    monthEl.innerText = date.toLocaleString("default", { month: "long", year: "numeric" });
 
-            let firstDay = new Date(currentYear, currentMonth, 1).getDay();
-            if (firstDay === 0) firstDay = 7;
+                    const first = new Date(date.getFullYear(), date.getMonth(), 1).getDay();
+                    const last = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
+                    const start = first === 0 ? 6 : first - 1;
 
-            const totalDays = new Date(currentYear, currentMonth + 1, 0).getDate();
+                    for (let i = 0; i < start; i++) daysEl.innerHTML += "<span></span>";
 
-            for (let i = 1; i < firstDay; i++) {
-                const empty = document.createElement("span");
-                daysContainer.appendChild(empty);
-            }
-
-            for (let d = 1; d <= totalDays; d++) {
-                const day = document.createElement("span");
-                day.innerText = d;
-
-                day.addEventListener("click", () => {
-                    document.querySelectorAll("#calendarDays span").forEach(s => s.classList.remove("active"));
-                    day.classList.add("active");
-                    selectedFullDate = `${d}-${monthNames[currentMonth]}-${currentYear}`;
-                });
-
-                daysContainer.appendChild(day);
-            }
-        }
-
-        document.addEventListener("DOMContentLoaded", () => {
-            renderCalendar();
-
-            document.getElementById("prevMonth").addEventListener("click", () => {
-                currentMonth = currentMonth > 0 ? currentMonth - 1 : 11;
-                if (currentMonth === 11) currentYear--;
-                renderCalendar();
-            });
-
-            document.getElementById("nextMonth").addEventListener("click", () => {
-                currentMonth = currentMonth < 11 ? currentMonth + 1 : 0;
-                if (currentMonth === 0) currentYear++;
-                renderCalendar();
-            });
-        });
-    </script>
-
-    <!-- PRICE LOGIC -->
-
-    <script>
-        document.getElementById("timeSelect").addEventListener("change", function () {
-            let t = this.value;
-            let newPrice = 400;
-            let muthu = 390;
-
-            if (t === "FullDay") newPrice = 600;
-            else if (t === "08:00AM to 10:00AM") newPrice = 420;
-            else if (t === "11:00AM to 1:00PM") muthu = 390;
-            else if (t === "2:00 PM - 4:00 PM") newPrice = 430;
-            else if (t === "5:00 PM - 8:00 PM") newPrice = 440;
-
-            document.getElementById("Vel").innerHTML = "₹" + newPrice;
-        });
-    </script>
-
-
-    <!-- SAVE FORM -->
-    <script>
-        document.getElementById("Cleaning").addEventListener("submit", submitForm);
-
-        function submitForm(e) {
-            e.preventDefault();
-
-            if (!selectedFullDate) return alert("Please select a date");
-
-            let name = getVal("name");
-            let number = getVal("number");
-            let address = getVal("address");
-            let serviceName = document.getElementById("myTitle").innerText;
-            let price = document.getElementById("Vel").innerText.replace("₹", "");
-            let time = document.getElementById("timeSelect").value;
-            let monthYear = document.getElementById("calendarMonth").innerText;
-
-            saveMessages(name, number, address, selectedFullDate, serviceName, monthYear, price, time);
-
-            window.location.href = "sumite.html";
-        }
-
-        function saveMessages(name, number, address, date, title, month, price, time) {
-            let newBooking = contactFormDB.push();
-
-            newBooking.set({
-                name,
-                number,
-                address,
-                selectedDate: date,
-                selectedTime: time,
-                title,
-                monthDisplayed: month,
-                price
-            });
-        }
-
-        function getVal(id) {
-            return document.getElementById(id).value;
-        }
-    </script>
-    <script>
-        const timeSelect = document.getElementById("timeSelect");
-        const priceText = document.getElementById("Vel");
-        const continueBtn = document.getElementById("continueBtn");
-
-        timeSelect.addEventListener("change", function () {
-            let price = 400;
-
-            switch (this.value) {
-                case "FullDay  (10AM-3PM)":
-                    price = 800;
-                    break;
-
-                case "08:00AM to 10:00AM":
-                    price = 400;
-                    break;
-
-                case "11:00AM to 1:00PM":
-                    price = 400;
-                    break;
-
-                case "2:00PM to 4:00PM":
-                    price = 400;
-                    break;
-
-                case "5:00PM to 8:00PM":
-                    price = 400;
-                    break;
-            }
-
-            priceText.innerHTML = `₹${price} <small>(Floor price)</small>`;
-            continueBtn.innerText = `Continue – ₹${price}`;
-        });
-    </script>
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-
-            const title = localStorage.getItem("serviceTitle");
-            let price = Number(localStorage.getItem("servicePrice")) || 400;
-
-            // SHOW TITLE
-            if (title) {
-                document.getElementById("myTitle").innerText =
-                    "Booking: " + title;
-            }
-
-            // SHOW PRICE
-            updatePrice(price);
-
-            const timeSelect = document.getElementById("timeSelect");
-            const priceText = document.getElementById("Vel");
-            const continueBtn = document.getElementById("continueBtn");
-
-            timeSelect.addEventListener("change", function () {
-                switch (this.value) {
-                    case "FullDay  (10AM-3PM)": price = 800; break;
-                    case "08:00AM to 10:00AM": price = 420; break;
-                    case "11:00AM to 1:00PM": price = 400; break;
-                    case "2:00PM to 4:00PM": price = 430; break;
-                    case "5:00PM to 8:00PM": price = 440; break;
-                    default: price = 400;
+                    for (let d = 1; d <= last; d++) {
+                        const s = document.createElement("span");
+                        s.innerText = d;
+                        s.onclick = () => {
+                            document.querySelectorAll(".days span").forEach(x => x.classList.remove("active"));
+                            s.classList.add("active");
+                            selectedDay = `${d}-${date.getMonth() + 1}-${date.getFullYear()}`;
+                        };
+                        daysEl.appendChild(s);
+                    }
+                } const service = localStorage.getItem("serviceTitle");
+                if (service) {
+                    document.getElementById("bookingTitle").innerText =
+                        "Booking: " + service;
                 }
 
-                updatePrice(price);
-                localStorage.setItem("servicePrice", price);
-            });
 
-            function updatePrice(p) {
-                priceText.innerHTML =
-                    `₹${p} <small>(Floor price)</small>`;
-                continueBtn.innerText =
-                    `Continue – ₹${p}`;
-            }
-        });
+                renderCalendar();
+
+                document.getElementById("prevMonth").onclick = () => { date.setMonth(date.getMonth() - 1); renderCalendar(); }
+                document.getElementById("nextMonth").onclick = () => { date.setMonth(date.getMonth() + 1); renderCalendar(); }
+
+                document.getElementById("Plumbing").onsubmit = e => {
+                    e.preventDefault();
+
+                    if (!selectedDay) { alert("Select date"); return; }
+
+                    db.push({
+                        name: document.getElementById("name").value,
+                        phone: document.getElementById("number").value,
+                        address: document.getElementById("address").value,
+                        date: selectedDay,
+                        time: document.getElementById("timeSelect").value,
+                        service: localStorage.getItem("serviceTitle"),
+                        createdAt: Date.now()
+                    });
+
+                    window.location.href = "sumite.html";
+                };
+
+            }, []);
+
+            return (
+                <div className="container">
+                    <form id="Plumbing">
+                        <h2 className="title">Booking Details</h2>
+                        <h2 id="bookingTitle">Booking:</h2>
+
+
+                        <h4 className="section-title">Select Date</h4>
+                        <div className="calendar-box">
+                            <div className="calendar-header">
+                                <span id="prevMonth">‹</span>
+                                <h3 id="calendarMonth"></h3>
+                                <span id="nextMonth">›</span>
+                            </div>
+                            <div className="weekdays">
+                                <span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span><span>Su</span>
+                            </div>
+                            <div className="days" id="calendarDays"></div>
+                        </div>
+
+
+                        <select id="timeSelect" class="promo-box" required>
+                            <option value="">Choose Time</option>
+                               <option>Full Day</option>
+                            <option>8AM - 10AM</option>
+                            <option>10AM - 3PM</option>
+                            <option>5PM - 8PM</option>
+                        </select>
+
+
+                        <h4 className="section-title">Contact</h4>
+                        <div className="promo-box"><input id="name" placeholder="Name" type="text" required /></div>
+                        <div className="promo-box"><input id="number" placeholder="Phone" type="number" required /></div>
+                        <div className="promo-box"><textarea id="address" type="text" placeholder="Address" required></textarea></div>
+
+                        <button className="footer-btn">Continue</button>
+                    </form>
+                </div>
+            );
+        }
+
+        ReactDOM.createRoot(document.getElementById("root")).render(<App />);
     </script>
-
-
 </body>
 
 </html>
