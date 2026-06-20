@@ -4,13 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cleaning Services</title> <!-- Font Awesome -->
+    <title>Cleaning Services</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <!-- React -->
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -30,7 +26,6 @@
             margin: auto;
         }
 
-        /* HEADER */
         .header {
             display: flex;
             align-items: center;
@@ -55,7 +50,6 @@
             transform: scale(0.85);
         }
 
-        /* SEARCH BOX */
         .search-box {
             background: #1c1c27;
             padding: 14px;
@@ -82,7 +76,6 @@
             font-size: 17px;
         }
 
-        /* SERVICE CARDS */
         .card {
             background: #1c1c27;
             padding: 16px;
@@ -106,7 +99,6 @@
             transform: scale(0.96);
         }
 
-        /* ICON AVATAR */
         .avatar {
             width: 75px;
             height: 75px;
@@ -119,7 +111,6 @@
             color: #c08aff;
         }
 
-        /* CARD TEXT */
         .card-content .name {
             font-size: 12px;
             opacity: 0.65;
@@ -131,12 +122,6 @@
             font-weight: 600;
         }
 
-        .price {
-            color: #c08aff;
-            font-weight: 600;
-        }
-
-        /* EMPTY RESULT */
         .no-results {
             margin-top: 40px;
             text-align: center;
@@ -144,7 +129,6 @@
             font-size: 15px;
         }
 
-        /* RESPONSIVE */
         @media (max-width: 360px) {
             .avatar {
                 width: 65px;
@@ -160,74 +144,63 @@
 </head>
 
 <body>
-    <div id="root"></div>
-    <script type="text/babel">
-        function CleaningPage() {
-            const [search, setSearch] = React.useState("");
+    <div class="app">
+        <div class="header">
+            <i class="fa fa-arrow-left" onclick="window.location.href='home.html'"></i>
+        </div>
 
-            const services = [
-                { name: "Chantal Shelburne", service: "Home Cleaning",  icon: "fa-broom", page: "cleaningbook.html" },
-                { name: "Lauralee Quintero", service: "Kitchen Cleaning", icon: "fa-utensils", page: "cleaningbook2.html" },
-                { name: "Geoffrey Mott", service: "Toilet Cleaning",  icon: "fa-toilet", page: "cleaningbook3.html" },
-                { name: "Leatrice Handler", service: "Window Cleaning",  icon: "fa-window-restore", page: "cleaningbook4.html" },
-                { name: "Leatrice Handler", service: "All Work In Cleaning",  icon: "fa-house", page: "cleaningbook5.html" }
-            ];
+        <div class="search-box">
+            <i class="fa fa-search"></i>
+            <input type="text" id="searchInput" placeholder="Search cleaning services...">
+        </div>
 
-            function saveBooking(item) {
-                let bookings = JSON.parse(localStorage.getItem("bookings")) || [];
-                bookings.push({
-                    name: item.name,
-                    service: item.service,
-                   
-                    icon: item.icon,
-                    status: "Upcoming"
-                });
-                localStorage.setItem("bookings", JSON.stringify(bookings));
-                window.location.href = item.page;
-            }
+        <p class="no-results" id="noResults" style="display:none;">No services found</p>
 
-            const filtered = services.filter(item =>
-                item.service.toLowerCase().includes(search.toLowerCase())
-            );
+        <div id="cardList"></div>
+    </div>
 
-            return (
-                <div className="app">
-                    <div className="header">
-                        <i className="fa fa-arrow-left" onClick={() => window.location.href = 'home.html'}></i>
-                    </div>
+    <script>
+        const services = [
+            { name: "Chantal Shelburne",  service: "Home Cleaning",        icon: "fa-broom",          page: "cleaningbook.html" },
+            { name: "Lauralee Quintero",  service: "Kitchen Cleaning",      icon: "fa-utensils",       page: "cleaningbook2.html" },
+            { name: "Geoffrey Mott",      service: "Toilet Cleaning",       icon: "fa-toilet",         page: "cleaningbook3.html" },
+            { name: "Leatrice Handler",   service: "Window Cleaning",       icon: "fa-window-restore", page: "cleaningbook4.html" },
+            { name: "Leatrice Handler",   service: "All Work In Cleaning",  icon: "fa-house",          page: "cleaningbook5.html" }
+        ];
 
-                    <div className="search-box">
-                        <i className="fa fa-search"></i>
-                        <input
-                            type="text"
-                            placeholder="Search cleaning services..."
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                        />
-                    </div>
-
-                    {filtered.length === 0 && (
-                        <p className="no-results">No services found</p>
-                    )}
-
-                    {filtered.map((item, index) => (
-                        <div className="card" key={index} onClick={() => saveBooking(item)}>
-                            <div className="avatar">
-                                <i className={`fa-solid ${item.icon}`}></i>
-                            </div>
-                            <div className="card-content">
-                                <p className="name">{item.name}</p>
-                                <h3>{item.service}</h3>
-                               
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            );
+        function saveBooking(item) {
+            let bookings = JSON.parse(localStorage.getItem("bookings")) || [];
+            bookings.push({ name: item.name, service: item.service, icon: item.icon, status: "Upcoming" });
+            localStorage.setItem("bookings", JSON.stringify(bookings));
+            window.location.href = item.page;
         }
 
-        ReactDOM.createRoot(document.getElementById("root")).render(<CleaningPage />);
-    </script>
+        function renderCards(list) {
+            const container = document.getElementById("cardList");
+            const noResults = document.getElementById("noResults");
+            container.innerHTML = "";
+            noResults.style.display = list.length === 0 ? "block" : "none";
+            list.forEach((item, i) => {
+                const card = document.createElement("div");
+                card.className = "card";
+                card.innerHTML = `
+                    <div class="avatar"><i class="fa-solid ${item.icon}"></i></div>
+                    <div class="card-content">
+                        <p class="name">${item.name}</p>
+                        <h3>${item.service}</h3>
+                    </div>`;
+                card.onclick = () => saveBooking(item);
+                container.appendChild(card);
+            });
+        }
 
+        renderCards(services);
+
+        document.getElementById("searchInput").addEventListener("input", function () {
+            const val = this.value.toLowerCase();
+            renderCards(services.filter(s => s.service.toLowerCase().includes(val)));
+        });
+    </script>
 </body>
+
 </html>
