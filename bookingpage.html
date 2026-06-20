@@ -5,12 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Bookings</title>
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" />
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         body {
             margin: 0;
@@ -24,6 +20,7 @@
 
         .container {
             max-width: 360px;
+            width: 100%;
         }
 
         .containe {
@@ -97,15 +94,8 @@
             text-align: center;
         }
 
-        .btn-msg {
-            background: #25D366;
-            color: white;
-        }
-
-        .btn-cancel {
-            background: #e74c3c;
-            color: white;
-        }
+        .btn-msg    { background: #25D366; color: white; }
+        .btn-cancel { background: #e74c3c; color: white; }
 
         .empty {
             text-align: center;
@@ -117,93 +107,83 @@
 </head>
 
 <body>
-    <div id="root"></div>
+    <div class="container">
+        <div class="containe">
+            <div class="header">
+                <h1>My Bookings</h1>
+            </div>
+            <div id="bookingList"></div>
+        </div>
+    </div>
 
-    <script type="text/babel">
-        function MyBookings() {
-            const [bookings, setBookings] = React.useState([]);
+    <script>
+        const serviceIcons = {
+            Plumbing:   "fa-wrench",
+            Electrical: "fa-bolt",
+            Cleaning:   "fa-broom",
+            Carpentry:  "fa-screwdriver-wrench",
+            Painting:   "fa-paint-roller"
+        };
 
-            // Default icons for services
-            const serviceIcons = {
-                Plumbing: "fa-wrench",
-                Electrical: "fa-bolt",
-                Cleaning: "fa-broom",
-                Carpentry: "fa-screwdriver-wrench",
-                Painting: "fa-paint-roller",
-            };
+        let bookings = JSON.parse(localStorage.getItem("bookings")) || [];
 
-            React.useEffect(() => {
-                let data = JSON.parse(localStorage.getItem("bookings")) || [];
+        // Assign default icons
+        bookings = bookings.map(b => ({
+            ...b,
+            icon: b.icon || serviceIcons[b.service] || "fa-circle"
+        }));
+        localStorage.setItem("bookings", JSON.stringify(bookings));
 
-                // Assign default icon if not present
-                data = data.map(b => ({
-                    ...b,
-                    icon: b.icon || serviceIcons[b.service] || "fa-circle",
-                }));
+        let upcoming = bookings.filter(b => b.status === "Upcoming");
 
-                localStorage.setItem("bookings", JSON.stringify(data));
-                setBookings(data.filter(b => b.status === "Upcoming"));
-            }, []);
+        function render() {
+            const list = document.getElementById("bookingList");
+            list.innerHTML = "";
 
-            function markCancelled(index) {
-                let updated = [...bookings];
-                updated[index].status = "Cancelled";
-
-                let allBookings = JSON.parse(localStorage.getItem("bookings")) || [];
-                allBookings = allBookings.map(b =>
-                    b.name === updated[index].name && b.service === updated[index].service
-                        ? { ...b, status: "Cancelled" }
-                        : b
-                );
-
-                localStorage.setItem("bookings", JSON.stringify(allBookings));
-                setBookings(updated.filter(b => b.status === "Upcoming"));
+            if (upcoming.length === 0) {
+                list.innerHTML = '<p class="empty">No upcoming bookings.</p>';
+                return;
             }
 
-            function sendWhatsApp(index) {
-                let b = bookings[index];
-                let message = `Hi, I want to talk about my booking:
-Service: ${b.service}
-Name: ${b.name}
-Price: ${b.price || "N/A"}`;
-
-                window.open("https://wa.me/916381893332?text=" + encodeURIComponent(message));
-            }
-
-            return (
-                <div className="container">
-                    <div className="containe">
-                        <div className="header">
-                            <h1>My Bookings</h1>
-                        </div>
-
-                        {bookings.length === 0 ? (
-                            <p className="empty">No upcoming bookings.</p>
-                        ) : (
-                            bookings.map((b, index) => (
-                                <div key={index} className="booking-card">
-                                    <div className="service-img">
-                                        <i className={`fa-solid ${b.icon}`}></i>
-                                    </div>
-                                    <div className="details">
-                                        <h3>{b.service}</h3>
-                                        <p>{b.name}</p>
-                                        <p>{b.price}</p>
-                                    </div>
-                                    <div className="actions">
-                                        <button className="btn-msg" onClick={() => sendWhatsApp(index)}>Message</button>
-                                        <button className="btn-cancel" onClick={() => markCancelled(index)}>Cancel</button>
-                                    </div>
-                                </div>
-                            ))
-                        )}
+            upcoming.forEach((b, index) => {
+                const card = document.createElement("div");
+                card.className = "booking-card";
+                card.innerHTML = `
+                    <div class="service-img"><i class="fa-solid ${b.icon}"></i></div>
+                    <div class="details">
+                        <h3>${b.service}</h3>
+                        <p>${b.name || ""}</p>
+                        <p>${b.price || ""}</p>
                     </div>
-                </div>
-            )
+                    <div class="actions">
+                        <button class="btn-msg"    onclick="sendWhatsApp(${index})">Message</button>
+                        <button class="btn-cancel" onclick="markCancelled(${index})">Cancel</button>
+                    </div>`;
+                list.appendChild(card);
+            });
         }
 
-        const root = ReactDOM.createRoot(document.getElementById("root"));
-        root.render(<MyBookings />);
+        function markCancelled(index) {
+            upcoming[index].status = "Cancelled";
+
+            let all = JSON.parse(localStorage.getItem("bookings")) || [];
+            all = all.map(b =>
+                b.name === upcoming[index].name && b.service === upcoming[index].service
+                    ? { ...b, status: "Cancelled" }
+                    : b
+            );
+            localStorage.setItem("bookings", JSON.stringify(all));
+            upcoming = upcoming.filter(b => b.status === "Upcoming");
+            render();
+        }
+
+        function sendWhatsApp(index) {
+            const b = upcoming[index];
+            const message = `Hi, I want to talk about my booking:\nService: ${b.service}\nName: ${b.name || ""}\nPrice: ${b.price || "N/A"}`;
+            window.open("https://wa.me/916381893332?text=" + encodeURIComponent(message));
+        }
+
+        render();
     </script>
 </body>
 
