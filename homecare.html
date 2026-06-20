@@ -2,21 +2,11 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lab Test Services</title>
-
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-
-    <!-- React -->
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-
-    <!-- Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet" />
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -101,74 +91,59 @@
 </head>
 
 <body>
-    <div id="root"></div>
+    <div class="app">
+        <div class="header">
+            <i class="fa-solid fa-arrow-left" onclick="window.location.href='home.html'"></i>
+        </div>
 
-    <script type="text/babel">
-        function LabTestPage() {
-            const [search, setSearch] = React.useState("");
+        <div class="search-box">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="searchInput" placeholder="Search lab tests...">
+        </div>
 
-            const tests = [
-                { name: "Blood Test", service: "CBC - Complete Blood Count", icon: "fa-droplet", page: "homecare1.html" },
-                { name: "Hormone Test", service: "Thyroid Profile (T3 T4 TSH)", icon: "fa-user-doctor", page: "homecare2.html" },
-                { name: "Kidney Test", service: "KFT - Kidney Function Tests", icon: "fa-stethoscope", page: "homecare3.html" },
-                { name: "Liver Test", service: "LFT - Liver Function Tests", icon: "fa-notes-medical", page: "homecare4.html" },
-                { name: "Heart Health", service: "Lipid / Cholesterol Profile", icon: "fa-heart-pulse", page: "homecare5.html" },
-                { name: "Urine Test", service: "U R/M - Complete Urine Examination", icon: "fa-flask", page: "homecare6.html" },
-                { name: "Diabetes Test", service: "FBS - Fasting Blood Sugar", icon: "fa-syringe", page: "homecare7.html" },
-                { name: "Bone & Joint", service: "Calcium and Uric Acid", icon: "fa-bone", page: "homecare8.html" },
-                { name: "Inflammation", service: "ESR (Westergren)", icon: "fa-temperature-high", page: "homecare9.html" },
-                { name: "Lab Test", service: "All Service in Lab", icon: "fa-vials", page: "homecare10.html" }
-            ];
+        <p class="no-results" id="noResults" style="display:none;">No tests found</p>
+        <div id="cardList"></div>
+    </div>
 
-            const filtered = tests.filter(item =>
-                (item.name + item.service)
-                    .toLowerCase()
-                    .includes(search.toLowerCase())
-            );
+    <script>
+        const tests = [
+            { name: "Blood Test",    service: "CBC - Complete Blood Count",          icon: "fa-droplet",         page: "homecare1.html" },
+            { name: "Hormone Test",  service: "Thyroid Profile (T3 T4 TSH)",         icon: "fa-user-doctor",     page: "homecare2.html" },
+            { name: "Kidney Test",   service: "KFT - Kidney Function Tests",         icon: "fa-stethoscope",     page: "homecare3.html" },
+            { name: "Liver Test",    service: "LFT - Liver Function Tests",          icon: "fa-notes-medical",   page: "homecare4.html" },
+            { name: "Heart Health",  service: "Lipid / Cholesterol Profile",         icon: "fa-heart-pulse",     page: "homecare5.html" },
+            { name: "Urine Test",    service: "U R/M - Complete Urine Examination",  icon: "fa-flask",           page: "homecare6.html" },
+            { name: "Diabetes Test", service: "FBS - Fasting Blood Sugar",           icon: "fa-syringe",         page: "homecare7.html" },
+            { name: "Bone & Joint",  service: "Calcium and Uric Acid",              icon: "fa-bone",            page: "homecare8.html" },
+            { name: "Inflammation",  service: "ESR (Westergren)",                   icon: "fa-temperature-high",page: "homecare9.html" },
+            { name: "Lab Test",      service: "All Service in Lab",                  icon: "fa-vials",           page: "homecare10.html" }
+        ];
 
-            return (
-                <div className="app">
-                    <div className="header">
-                        <i
-                            className="fa-solid fa-arrow-left"
-                            onClick={() => window.location.href = "home.html"}>
-                        </i>
-                    </div>
-
-                    <div className="search-box">
-                        <i className="fa-solid fa-magnifying-glass"></i>
-                        <input
-                            placeholder="Search lab tests..."
-                            value={search}
-                            onChange={e => setSearch(e.target.value)}
-                        />
-                    </div>
-
-                    {filtered.length === 0 && (
-                        <p className="no-results">No tests found</p>
-                    )}
-
-                    {filtered.map((item, index) => (
-                        <div
-                            className="card"
-                            key={index}
-                            onClick={() => window.location.href = item.page}
-                        >
-                            <div className="icon-box">
-                                <i className={`fa-solid ${item.icon}`}></i>
-                            </div>
-                            <div>
-                                <p className="name">{item.name}</p>
-                                <h3>{item.service}</h3>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            );
+        function renderCards(list) {
+            const container = document.getElementById("cardList");
+            const noResults = document.getElementById("noResults");
+            container.innerHTML = "";
+            noResults.style.display = list.length === 0 ? "block" : "none";
+            list.forEach(item => {
+                const card = document.createElement("div");
+                card.className = "card";
+                card.innerHTML = `
+                    <div class="icon-box"><i class="fa-solid ${item.icon}"></i></div>
+                    <div>
+                        <p class="name">${item.name}</p>
+                        <h3>${item.service}</h3>
+                    </div>`;
+                card.onclick = () => window.location.href = item.page;
+                container.appendChild(card);
+            });
         }
 
-        ReactDOM.createRoot(document.getElementById("root"))
-            .render(<LabTestPage />);
+        renderCards(tests);
+
+        document.getElementById("searchInput").addEventListener("input", function () {
+            const val = this.value.toLowerCase();
+            renderCards(tests.filter(t => (t.name + t.service).toLowerCase().includes(val)));
+        });
     </script>
 </body>
 
